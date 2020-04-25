@@ -6,6 +6,7 @@
 //  Copyright © 2020 Hugo Flores Perez. All rights reserved.
 //
 
+import CoreLocation
 import MapKit
 import UIKit
 
@@ -33,11 +34,26 @@ class MapView: UIView {
     
     func setUpMap() {
         addSubview(mapView)
-        let margins = layoutMarginsGuide
+        let safeMargins = layoutMarginsGuide
         mapView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         mapView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         mapView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        mapView.bottomAnchor.constraint(equalTo: margins.bottomAnchor).isActive = true
+        mapView.bottomAnchor.constraint(equalTo: safeMargins.bottomAnchor).isActive = true
+    }
+    
+    func setMapPressListener(target: Any, action: Selector?) {
+        let gestureRecognizer = UITapGestureRecognizer(target: target, action: action)
+        mapView.addGestureRecognizer(gestureRecognizer)
+    }
+    
+    func getMapCoordinatesOfTouchPoint(gestureRecognizer: UIGestureRecognizer) -> CLLocationCoordinate2D {
+        let touchPoint = gestureRecognizer.location(in: mapView)
+        return mapView.convert(touchPoint, toCoordinateFrom: mapView)
+    }
+    
+    func centerMapInLocation(_ location: CLLocationCoordinate2D, regionRadius: CLLocationDistance) {
+        let region = MKCoordinateRegion(center: location, latitudinalMeters: regionRadius, longitudinalMeters: regionRadius)
+        mapView.setRegion(region, animated: true)
     }
     
 }
