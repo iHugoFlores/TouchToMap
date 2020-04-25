@@ -18,6 +18,8 @@ class MapView: UIView {
         return mapView
     }()
     
+    private let titleCard = TextCard()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUpMainLayout()
@@ -33,12 +35,24 @@ class MapView: UIView {
     }
     
     func setUpMap() {
+        setUpMapContents()
         addSubview(mapView)
         let safeMargins = layoutMarginsGuide
         mapView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         mapView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         mapView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         mapView.bottomAnchor.constraint(equalTo: safeMargins.bottomAnchor).isActive = true
+    }
+    
+    func setUpMapContents() {
+        titleCard.setTitle("Touch anywhere in the map to get information about the place")
+        mapView.addSubview(titleCard)
+        mapView.layoutMargins = UIEdgeInsets(top: 8, left: 16, bottom: 0, right: 16)
+        
+        let margins = mapView.layoutMarginsGuide
+        titleCard.widthAnchor.constraint(lessThanOrEqualTo: margins.widthAnchor).isActive = true
+        titleCard.centerXAnchor.constraint(equalTo: margins.centerXAnchor).isActive = true
+        titleCard.topAnchor.constraint(equalTo: margins.topAnchor).isActive = true
     }
     
     func setMapPressListener(target: Any, action: Selector?) {
