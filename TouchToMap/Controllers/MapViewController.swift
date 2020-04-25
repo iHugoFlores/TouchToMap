@@ -7,10 +7,11 @@
 //
 
 import CoreLocation
+import MapKit
 import UIKit
 
 class MapViewController: UIViewController {
-    
+
     private let viewObj = MapView()
 
     override func viewDidLoad() {
@@ -24,6 +25,7 @@ class MapViewController: UIViewController {
     }
     
     func setUpView() {
+        //viewObj.setMapDelegate(to: self)
         view.addSubview(viewObj)
         viewObj.setMapPressListener(target: self, action: #selector(onMapTapped(gestureReconizer:)))
         viewObj.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
@@ -54,10 +56,32 @@ class MapViewController: UIViewController {
                 return
             }
             self.viewObj.centerMapInLocation(region.center, regionRadius: region.radius * 2)
+            self.viewObj.setMapMarker(onMark: firstLocation)
         }
     }
-
 }
+/*
+extension MapViewController: MKMapViewDelegate {
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: CustomPointAnnotation.reuseIdentifier)
+        if annotationView == nil {
+            annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: CustomPointAnnotation.reuseIdentifier)
+            annotationView?.canShowCallout = true
+        } else {
+            annotationView?.annotation = annotation
+        }
+        
+        let customAnnotation = annotation as! CustomPointAnnotation
 
-
-
+        //annotationView?.image = UIImage(imageLiteralResourceName: customAnnotation.pinCustomImageName)
+        //annotationView?.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
+        
+        
+        return annotationView
+    }
+    
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        print("The annotation was selected",view.annotation?.title)
+    }
+}
+*/
