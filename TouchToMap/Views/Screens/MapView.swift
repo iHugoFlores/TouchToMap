@@ -15,7 +15,7 @@ class MapView: UIView {
     private let mapView: MKMapView = {
         let map = MKMapView()
         map.translatesAutoresizingMaskIntoConstraints = false
-        map.insetsLayoutMarginsFromSafeArea = false
+        //map.insetsLayoutMarginsFromSafeArea = false
         return map
     }()
     
@@ -51,14 +51,22 @@ class MapView: UIView {
         mapView.addSubview(titleCard)
         userLocationButton.setUpButton(iconName: "location", action: getUserLocation)
         mapView.addSubview(userLocationButton)
-        mapView.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 16, right: 16)
+        mapView.layoutMargins = UIEdgeInsets(top: 8, left: 16, bottom: 16, right: 16)
+        
+        mapView.showsCompass = false
+        let compassBtn = MKCompassButton(mapView: mapView)
+        compassBtn.translatesAutoresizingMaskIntoConstraints = false
+        compassBtn.compassVisibility = .adaptive
+        mapView.addSubview(compassBtn)
         
         let margins = mapView.layoutMarginsGuide
         titleCard.widthAnchor.constraint(lessThanOrEqualTo: margins.widthAnchor).isActive = true
         titleCard.centerXAnchor.constraint(equalTo: margins.centerXAnchor).isActive = true
-        titleCard.topAnchor.constraint(equalTo: mapView.safeAreaLayoutGuide.topAnchor, constant: 8).isActive = true
+        titleCard.topAnchor.constraint(equalTo: margins.topAnchor).isActive = true
         userLocationButton.trailingAnchor.constraint(equalTo: margins.trailingAnchor).isActive = true
         userLocationButton.bottomAnchor.constraint(equalTo: margins.bottomAnchor).isActive = true
+        compassBtn.centerXAnchor.constraint(equalTo: userLocationButton.centerXAnchor).isActive = true
+        compassBtn.bottomAnchor.constraint(equalTo: userLocationButton.topAnchor, constant: -32).isActive = true
     }
     
     func setMapPressListener(target: Any, action: Selector?) {
@@ -74,6 +82,26 @@ class MapView: UIView {
     func centerMapInLocation(_ location: CLLocationCoordinate2D, regionRadius: CLLocationDistance) {
         let region = MKCoordinateRegion(center: location, latitudinalMeters: regionRadius, longitudinalMeters: regionRadius)
         mapView.setRegion(region, animated: true)
+    }
+    
+    func setMapMarker(onMark: CLPlacemark) {
+        mapView.removeAnnotations(mapView.annotations)
+        guard
+            let region = onMark.region as? CLCircularRegion
+        else { return }
+        let annotation = CustomPointAnnotation()
+        //annotation.pinCustomImageName = "burg"
+        annotation.title = "\(onMark.name!)\n\(onMark.locality ?? "")"
+        //print("Location name: ", onMark.name, onMark.locality, onMark.administrativeArea)
+        //annotation.subtitle = "The details"
+        annotation.coordinate = region.center
+        
+        let annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: CustomPointAnnotation.reuseIdentifier)
+        mapView.addAnnotation(annotationView.annotation!)
+    }
+    
+    func setMapDelegate(to delegate: MKMapViewDelegate) {
+        mapView.delegate = delegate
     }
     
     func getUserLocation() {
