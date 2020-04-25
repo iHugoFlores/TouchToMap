@@ -13,12 +13,14 @@ import UIKit
 class MapView: UIView {
 
     private let mapView: MKMapView = {
-        let mapView = MKMapView()
-        mapView.translatesAutoresizingMaskIntoConstraints = false
-        return mapView
+        let map = MKMapView()
+        map.translatesAutoresizingMaskIntoConstraints = false
+        map.insetsLayoutMarginsFromSafeArea = false
+        return map
     }()
     
     private let titleCard = TextCard()
+    private let userLocationButton = IconButtonCard()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -47,12 +49,16 @@ class MapView: UIView {
     func setUpMapContents() {
         titleCard.setTitle("Touch anywhere in the map to get information about the place")
         mapView.addSubview(titleCard)
-        mapView.layoutMargins = UIEdgeInsets(top: 8, left: 16, bottom: 0, right: 16)
+        userLocationButton.setUpButton(iconName: "location", action: getUserLocation)
+        mapView.addSubview(userLocationButton)
+        mapView.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 16, right: 16)
         
         let margins = mapView.layoutMarginsGuide
         titleCard.widthAnchor.constraint(lessThanOrEqualTo: margins.widthAnchor).isActive = true
         titleCard.centerXAnchor.constraint(equalTo: margins.centerXAnchor).isActive = true
-        titleCard.topAnchor.constraint(equalTo: margins.topAnchor).isActive = true
+        titleCard.topAnchor.constraint(equalTo: mapView.safeAreaLayoutGuide.topAnchor, constant: 8).isActive = true
+        userLocationButton.trailingAnchor.constraint(equalTo: margins.trailingAnchor).isActive = true
+        userLocationButton.bottomAnchor.constraint(equalTo: margins.bottomAnchor).isActive = true
     }
     
     func setMapPressListener(target: Any, action: Selector?) {
@@ -68,6 +74,10 @@ class MapView: UIView {
     func centerMapInLocation(_ location: CLLocationCoordinate2D, regionRadius: CLLocationDistance) {
         let region = MKCoordinateRegion(center: location, latitudinalMeters: regionRadius, longitudinalMeters: regionRadius)
         mapView.setRegion(region, animated: true)
+    }
+    
+    func getUserLocation() {
+        print("Get user location here")
     }
     
 }
