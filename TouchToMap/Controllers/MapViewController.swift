@@ -49,6 +49,10 @@ class MapViewController: UIViewController {
                 let region = firstLocation.region as? CLCircularRegion
             else { return }
             print("Tapped Geo Info:", firstLocation)
+            if region.center.latitude == .zero || region.center.longitude == .zero {
+                print("Invalid region?")
+                return
+            }
             self.viewObj.centerMapInLocation(region.center, regionRadius: region.radius * 2)
         }
     }
