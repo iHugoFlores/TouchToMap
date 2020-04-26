@@ -14,16 +14,8 @@ class MapViewController: UIViewController {
 
     private let viewObj = MapView()
     
+    private let infoViewContent = LocationDetailsView()
     private var infoView: DraggableView?
-    var visualEffect: UIVisualEffectView?
-    let cardHeight: CGFloat = 600
-    let cardHandleAreaHeight: CGFloat = 60
-    var cardVisible = false
-    var nextCardState: DraggableView.ViewState {
-        return cardVisible ? DraggableView.ViewState.collapsed : DraggableView.ViewState.expanded
-    }
-    var runningAnimations = [UIViewPropertyAnimator]()
-    var animationProgressWhenInterrupted: CGFloat = .zero
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,13 +39,7 @@ class MapViewController: UIViewController {
     }
     
     func setUpCard() {
-        let label = UILabel()
-        label.text = "View content"
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.backgroundColor = .blue
-        label.textAlignment = .center
-        print(view.safeAreaInsets)
-        infoView = DraggableView(mainView: label)
+        infoView = DraggableView(mainView: infoViewContent, heightRatio: 0.3)
         addChild(infoView!)
         view.addSubview(infoView!.view)
     }
@@ -81,6 +67,7 @@ class MapViewController: UIViewController {
             }
             self.viewObj.centerMapInLocation(region.center, regionRadius: region.radius * 2)
             self.viewObj.setMapMarker(onMark: firstLocation)
+            self.infoView?.expandView()
         }
     }
 }
