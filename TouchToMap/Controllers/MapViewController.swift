@@ -47,86 +47,15 @@ class MapViewController: UIViewController {
     }
     
     func setUpCard() {
-        visualEffect = UIVisualEffectView()
-        visualEffect?.isUserInteractionEnabled = false
-        visualEffect?.frame = view.frame
-        view.addSubview(visualEffect!)
-        infoView = DraggableView()
+        let label = UILabel()
+        label.text = "View content"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = .blue
+        label.textAlignment = .center
+        print(view.safeAreaInsets)
+        infoView = DraggableView(mainView: label)
         addChild(infoView!)
         view.addSubview(infoView!.view)
-        infoView!.view.frame = CGRect(x: 0, y: view.frame.height - cardHandleAreaHeight, width: view.bounds.width, height: cardHeight)
-        infoView?.view.clipsToBounds = true
-        
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleCardTap(recognizer:)))
-        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(MapViewController.handleCardPan(recognizer:)))
-        infoView?.view.addGestureRecognizer(tapGestureRecognizer)
-        infoView?.view.addGestureRecognizer(panGestureRecognizer)
-    }
-    
-    @objc
-    func handleCardTap(recognizer: UITapGestureRecognizer) {
-        
-    }
-    
-    @objc
-    func handleCardPan(recognizer: UIPanGestureRecognizer) {
-        switch recognizer.state {
-        case .began:
-            // Start Transition
-            startInteractiveTransition(state: nextCardState, duration: 0.9)
-        case .changed:
-            // Update Transition
-            let translation = recognizer.translation(in: infoView?.view)
-            var fractionCompleted = translation.y / cardHeight
-            fractionCompleted = cardVisible ? fractionCompleted : -fractionCompleted
-            updateInteractiveTransition(fractionCompleted: fractionCompleted)
-        case .ended:
-            // Continue transition
-            continueInteractiveTransition()
-        default:
-            print("Not implemented")
-        }
-    }
-    
-    func animateTransitionIfNeeded(state: DraggableView.ViewState, duration: TimeInterval) {
-        if runningAnimations.isEmpty {
-            let frameAnimator = UIViewPropertyAnimator(duration: duration, dampingRatio: 1) {
-                switch state {
-                case .expanded:
-                    self.infoView?.view.frame.origin.y = self.view.frame.height - self.cardHeight
-                default:
-                    self.infoView?.view.frame.origin.y = self.view.frame.height - self.cardHandleAreaHeight
-                }
-            }
-            frameAnimator.addCompletion { _ in
-                self.cardVisible = !self.cardVisible
-                self.runningAnimations.removeAll()
-            }
-            frameAnimator.startAnimation()
-            runningAnimations.append(frameAnimator)
-        }
-    }
-    
-    func startInteractiveTransition(state: DraggableView.ViewState, duration: TimeInterval) {
-        if runningAnimations.isEmpty {
-            animateTransitionIfNeeded(state: state, duration: duration)
-        }
-        for animator in runningAnimations {
-            animator.pauseAnimation()
-            animationProgressWhenInterrupted = animator.fractionComplete
-        }
-    }
-    
-    func updateInteractiveTransition(fractionCompleted: CGFloat) {
-        for animator in runningAnimations {
-            animator.fractionComplete = fractionCompleted + animationProgressWhenInterrupted
-        }
-    }
-    
-    func continueInteractiveTransition() {
-        for animator in runningAnimations {
-            animator.continueAnimation(withTimingParameters: nil, durationFactor: 0)
-        }
     }
     
     @objc
