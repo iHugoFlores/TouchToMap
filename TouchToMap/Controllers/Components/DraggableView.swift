@@ -13,7 +13,7 @@ class DraggableView: UIViewController {
         case expanded, collapsed
     }
     
-    let viewHeight: CGFloat = 600
+    var viewHeight: CGFloat = 0
     let handleAreaHeight: CGFloat = 30
     var visualEffect: UIVisualEffectView?
     var viewVisible = false
@@ -22,6 +22,7 @@ class DraggableView: UIViewController {
     }
     var runningAnimations = [UIViewPropertyAnimator]()
     var animationProgressWhenInterrupted: CGFloat = .zero
+    let animationDuration: TimeInterval = 0.9
     
     private var contentView: UIView?
     
@@ -35,7 +36,7 @@ class DraggableView: UIViewController {
         return view
     }()
     
-    init(mainView: UIView) {
+    init(mainView: UIView, heightRatio: CGFloat) {
         super.init(nibName: nil, bundle: nil)
         contentView = mainView
         contentView?.translatesAutoresizingMaskIntoConstraints = false
@@ -43,6 +44,7 @@ class DraggableView: UIViewController {
         let safeFrame = window.safeAreaLayoutGuide.layoutFrame
         topSafeAreaHeight = safeFrame.minY
         bottomSafeAreaHeight = window.frame.maxY - safeFrame.maxY
+        viewHeight = (safeFrame.height * heightRatio) - handleAreaHeight
     }
     
     required init?(coder: NSCoder) {
@@ -64,7 +66,11 @@ class DraggableView: UIViewController {
     }
     
     func setViewCompressedPosition() {
-        view.frame.origin.y = view.frame.height - handleAreaHeight - bottomSafeAreaHeight
+        view.frame.origin.y = view.frame.height
+    }
+    
+    func setViewExpandedPosition() {
+        view.frame.origin.y = view.frame.height - viewHeight - handleAreaHeight - bottomSafeAreaHeight
     }
     
     func setUpMain() {
@@ -84,6 +90,7 @@ class DraggableView: UIViewController {
         contentView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         contentView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         contentView.heightAnchor.constraint(equalToConstant: viewHeight).isActive = true
+        //contentView.bottomAnchor.constraint(equalTo: margins.bottomAnchor).isActive = true
     }
     
     func setUpAnimationActions() {
@@ -91,12 +98,17 @@ class DraggableView: UIViewController {
         handlingArea.addGestureRecognizer(panGestureRecognizer)
     }
     
+    func expandView() {
+        if viewVisible { return }
+        animateTransitionIfNeeded(state: nextState, duration: animationDuration)
+    }
+    
     @objc
     func handleCardPan(recognizer: UIPanGestureRecognizer) {
         switch recognizer.state {
         case .began:
             // Start Transition
-            startInteractiveTransition(state: nextState, duration: 0.9)
+            startInteractiveTransition(state: nextState, duration: animationDuration)
         case .changed:
             // Update Transition
             let translation = recognizer.translation(in: view)
@@ -115,10 +127,8 @@ class DraggableView: UIViewController {
         if runningAnimations.isEmpty {
             let frameAnimator = UIViewPropertyAnimator(duration: duration, dampingRatio: 1) {
                 switch state {
-                case .expanded:
-                    self.view.frame.origin.y = self.view.frame.height - self.viewHeight
-                default:
-                    self.view.frame.origin.y = self.view.frame.height - self.handleAreaHeight - self.bottomSafeAreaHeight
+                case .expanded: self.setViewExpandedPosition()
+                default: self.setViewCompressedPosition()
                 }
             }
             frameAnimator.addCompletion { _ in
