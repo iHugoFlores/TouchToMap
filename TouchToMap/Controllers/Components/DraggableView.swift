@@ -9,25 +9,26 @@
 import UIKit
 
 class DraggableView: UIViewController {
-    enum ViewState {
+    private enum ViewState {
         case expanded, collapsed
     }
     
-    var viewHeight: CGFloat = 0
-    let handleAreaHeight: CGFloat = 30
-    var visualEffect: UIVisualEffectView?
-    var viewVisible = false
-    var nextState: ViewState {
+    private var viewHeight: CGFloat = 0
+    private let handleAreaHeight: CGFloat = 30
+    private var visualEffect: UIVisualEffectView?
+    private var viewVisible = false
+    private var nextState: ViewState {
         return viewVisible ? .collapsed : .expanded
     }
-    var runningAnimations = [UIViewPropertyAnimator]()
-    var animationProgressWhenInterrupted: CGFloat = .zero
-    let animationDuration: TimeInterval = 0.9
+    private var runningAnimations = [UIViewPropertyAnimator]()
+    private var animationProgressWhenInterrupted: CGFloat = .zero
+    private let animationDuration: TimeInterval = 0.9
     
     private var contentView: UIView?
+    private var onAnimationDone: (() -> Void)?
     
-    var topSafeAreaHeight: CGFloat = 0
-    var bottomSafeAreaHeight: CGFloat = 0
+    private var topSafeAreaHeight: CGFloat = 0
+    private var bottomSafeAreaHeight: CGFloat = 0
     
     let handlingArea: UIView = {
         let view = UIView()
@@ -98,9 +99,10 @@ class DraggableView: UIViewController {
         handlingArea.addGestureRecognizer(panGestureRecognizer)
     }
     
-    func expandView() {
+    func expandView(onAnimationDone: (() -> Void)?) {
         if viewVisible { return }
         animateTransitionIfNeeded(state: nextState, duration: animationDuration)
+        self.onAnimationDone = onAnimationDone
     }
     
     @objc
@@ -123,7 +125,7 @@ class DraggableView: UIViewController {
         }
     }
     
-    func animateTransitionIfNeeded(state: DraggableView.ViewState, duration: TimeInterval) {
+    private func animateTransitionIfNeeded(state: DraggableView.ViewState, duration: TimeInterval) {
         if runningAnimations.isEmpty {
             let frameAnimator = UIViewPropertyAnimator(duration: duration, dampingRatio: 1) {
                 switch state {
@@ -134,13 +136,17 @@ class DraggableView: UIViewController {
             frameAnimator.addCompletion { _ in
                 self.viewVisible.toggle()
                 self.runningAnimations.removeAll()
+                if let onAnimationDone = self.onAnimationDone {
+                    onAnimationDone()
+                    self.onAnimationDone = nil
+                }
             }
             frameAnimator.startAnimation()
             runningAnimations.append(frameAnimator)
         }
     }
     
-    func startInteractiveTransition(state: DraggableView.ViewState, duration: TimeInterval) {
+    private func startInteractiveTransition(state: DraggableView.ViewState, duration: TimeInterval) {
         if runningAnimations.isEmpty {
             animateTransitionIfNeeded(state: state, duration: duration)
         }
@@ -150,13 +156,13 @@ class DraggableView: UIViewController {
         }
     }
     
-    func updateInteractiveTransition(fractionCompleted: CGFloat) {
+    private func updateInteractiveTransition(fractionCompleted: CGFloat) {
         for animator in runningAnimations {
             animator.fractionComplete = fractionCompleted + animationProgressWhenInterrupted
         }
     }
     
-    func continueInteractiveTransition() {
+    private func continueInteractiveTransition() {
         for animator in runningAnimations {
             animator.continueAnimation(withTimingParameters: nil, durationFactor: 0)
         }
