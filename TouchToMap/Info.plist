@@ -62,5 +62,7 @@
     <string>Program requires GPS to track cars and job orders</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Program requires GPS to track cars and job orders</string>
+    <key>NSFaceIDUsageDescription</key>
+    <string>We use Face ID to unlock the notes</string>
 </dict>
 </plist>
