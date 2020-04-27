@@ -33,7 +33,17 @@ class DraggableView: UIViewController {
     let handlingArea: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .red
+        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        view.layer.cornerRadius = 16
+        let icon = UIImageView(image: UIImage(systemName: "minus")!.withRenderingMode(.alwaysTemplate))
+        icon.tintColor = .systemGray
+        icon.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(icon)
+        
+        icon.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        icon.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        icon.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        icon.heightAnchor.constraint(equalToConstant: 30).isActive = true
         return view
     }()
     
@@ -54,6 +64,13 @@ class DraggableView: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .clear
+        let blurEffect = UIBlurEffect(style: .regular)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.frame = view.frame
+        blurEffectView.layer.cornerRadius = 16
+        blurEffectView.clipsToBounds = true
+        view.insertSubview(blurEffectView, at: 0)
         setUpAnimatableViews()
         setUpMain()
         setUpAnimationActions()
