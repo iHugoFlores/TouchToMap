@@ -13,6 +13,8 @@
 		F04604E12454E6C3006D1BD6 /* CustomPointAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04604E02454E6C3006D1BD6 /* CustomPointAnnotation.swift */; };
 		F04604E42454F244006D1BD6 /* DraggableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04604E32454F244006D1BD6 /* DraggableView.swift */; };
 		F04604E62454F858006D1BD6 /* LocationDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04604E52454F858006D1BD6 /* LocationDetailsView.swift */; };
+		F0821E7B2457604900E4DAC4 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0821E7A2457604900E4DAC4 /* LoginViewController.swift */; };
+		F0821E7D2457631600E4DAC4 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0821E7C2457631600E4DAC4 /* LoginView.swift */; };
 		F0E0FE7E24547B16001914F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0E0FE7D24547B16001914F9 /* AppDelegate.swift */; };
 		F0E0FE8024547B16001914F9 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0E0FE7F24547B16001914F9 /* SceneDelegate.swift */; };
 		F0E0FE8224547B16001914F9 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0E0FE8124547B16001914F9 /* MapViewController.swift */; };
@@ -27,6 +29,8 @@
 		F04604E02454E6C3006D1BD6 /* CustomPointAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPointAnnotation.swift; sourceTree = "<group>"; };
 		F04604E32454F244006D1BD6 /* DraggableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggableView.swift; sourceTree = "<group>"; };
 		F04604E52454F858006D1BD6 /* LocationDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationDetailsView.swift; sourceTree = "<group>"; };
+		F0821E7A2457604900E4DAC4 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		F0821E7C2457631600E4DAC4 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		F0E0FE7A24547B16001914F9 /* TouchToMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TouchToMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0E0FE7D24547B16001914F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F0E0FE7F24547B16001914F9 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -68,6 +72,7 @@
 			children = (
 				F04604E22454F202006D1BD6 /* Components */,
 				F0E0FE8124547B16001914F9 /* MapViewController.swift */,
+				F0821E7A2457604900E4DAC4 /* LoginViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -87,6 +92,7 @@
 			children = (
 				F04604D724549376006D1BD6 /* MapView.swift */,
 				F04604E52454F858006D1BD6 /* LocationDetailsView.swift */,
+				F0821E7C2457631600E4DAC4 /* LoginView.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -208,6 +214,8 @@
 				F0E0FE8224547B16001914F9 /* MapViewController.swift in Sources */,
 				F04604D824549376006D1BD6 /* MapView.swift in Sources */,
 				F0E0FE7E24547B16001914F9 /* AppDelegate.swift in Sources */,
+				F0821E7D2457631600E4DAC4 /* LoginView.swift in Sources */,
+				F0821E7B2457604900E4DAC4 /* LoginViewController.swift in Sources */,
 				F0E0FE8024547B16001914F9 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
