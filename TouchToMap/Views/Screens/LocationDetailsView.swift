@@ -13,8 +13,9 @@ class LocationDetailsView: UIView {
     
     private let contentText: UITextView = {
         let text = UITextView()
-        text.isUserInteractionEnabled = false
+        text.isEditable = false
         text.translatesAutoresizingMaskIntoConstraints = false
+        text.backgroundColor = .clear
         return text
     }()
 
@@ -28,8 +29,6 @@ class LocationDetailsView: UIView {
     }
     
     func setUpMain() {
-        //insetsLayoutMarginsFromSafeArea = false
-        backgroundColor = .white
         translatesAutoresizingMaskIntoConstraints = false
         addSubview(contentText)
         let margins = layoutMarginsGuide
