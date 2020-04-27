@@ -11,7 +11,6 @@ import MapKit
 import UIKit
 
 class MapView: UIView {
-
     private let mapView: MKMapView = {
         let map = MKMapView()
         map.translatesAutoresizingMaskIntoConstraints = false
@@ -21,6 +20,7 @@ class MapView: UIView {
     
     private let titleCard = TextCard()
     private let userLocationButton = IconButtonCard()
+    private var locationButtonAction: (() -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -92,7 +92,6 @@ class MapView: UIView {
         let annotation = CustomPointAnnotation()
         //annotation.pinCustomImageName = "burg"
         annotation.title = "\(onMark.name!)\n\(onMark.locality ?? "")"
-        //print("Location name: ", onMark.name, onMark.locality, onMark.administrativeArea)
         //annotation.subtitle = "The details"
         annotation.coordinate = region.center
         
@@ -104,8 +103,12 @@ class MapView: UIView {
         mapView.delegate = delegate
     }
     
+    func setLocationButtonAction(action: (() -> Void)?) {
+        locationButtonAction = action
+    }
+    
     func getUserLocation() {
-        print("Get user location here")
+        if let action = locationButtonAction { action() }
     }
     
 }
