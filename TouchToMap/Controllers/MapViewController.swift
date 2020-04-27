@@ -67,7 +67,8 @@ class MapViewController: UIViewController {
             }
             self.viewObj.centerMapInLocation(region.center, regionRadius: region.radius * 2)
             self.viewObj.setMapMarker(onMark: firstLocation)
-            self.infoView?.expandView()
+            self.infoViewContent.setLocationData(firstLocation)
+            self.infoView?.expandView(onAnimationDone: nil)
         }
     }
 }
