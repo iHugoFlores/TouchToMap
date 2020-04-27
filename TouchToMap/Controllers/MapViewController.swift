@@ -11,11 +11,14 @@ import MapKit
 import UIKit
 
 class MapViewController: UIViewController {
+    
+    private let locationManager = CLLocationManager()
 
     private let viewObj = MapView()
     
     private let infoViewContent = LocationDetailsView()
     private var infoView: DraggableView?
+    private var shouldGetUserLocation = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,11 +28,13 @@ class MapViewController: UIViewController {
     func setUpMain() {
         view.backgroundColor = UIColor(named: "MapControllerBackground")
         setUpView()
-        setUpCard()
+        setUpDetailsView()
+        setUpLocationManager()
     }
     
     func setUpView() {
         //viewObj.setMapDelegate(to: self)
+        viewObj.setLocationButtonAction(action: checkLocationPermissions)
         view.addSubview(viewObj)
         viewObj.setMapPressListener(target: self, action: #selector(onMapTapped(gestureReconizer:)))
         viewObj.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
@@ -38,10 +43,15 @@ class MapViewController: UIViewController {
         viewObj.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
     }
     
-    func setUpCard() {
+    func setUpDetailsView() {
         infoView = DraggableView(mainView: infoViewContent, heightRatio: 0.3)
         addChild(infoView!)
         view.addSubview(infoView!.view)
+    }
+    
+    func setUpLocationManager() {
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
     }
     
     @objc
@@ -49,8 +59,12 @@ class MapViewController: UIViewController {
         let coordinates = viewObj.getMapCoordinatesOfTouchPoint(gestureRecognizer: gestureReconizer)
         let latVal = coordinates.latitude
         let longVal = coordinates.longitude
+        getMapMarkerAndDetailsByLocation(CLLocation(latitude: latVal, longitude: longVal))
+    }
+    
+    func getMapMarkerAndDetailsByLocation(_ location: CLLocation) {
         let geoLocation = CLGeocoder()
-        geoLocation.reverseGeocodeLocation(CLLocation(latitude: latVal, longitude: longVal)) { [unowned self] (placemarks, error) in
+        geoLocation.reverseGeocodeLocation(location) { [unowned self] (placemarks, error) in
             if let error = error {
                 print("Error in reverse location", error)
                 return
@@ -71,29 +85,40 @@ class MapViewController: UIViewController {
             self.infoView?.expandView(onAnimationDone: nil)
         }
     }
-}
-/*
-extension MapViewController: MKMapViewDelegate {
-    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: CustomPointAnnotation.reuseIdentifier)
-        if annotationView == nil {
-            annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: CustomPointAnnotation.reuseIdentifier)
-            annotationView?.canShowCallout = true
-        } else {
-            annotationView?.annotation = annotation
-        }
-        
-        let customAnnotation = annotation as! CustomPointAnnotation
-
-        //annotationView?.image = UIImage(imageLiteralResourceName: customAnnotation.pinCustomImageName)
-        //annotationView?.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
-        
-        
-        return annotationView
+    
+    func checkLocationPermissions() {
+        let status: CLAuthorizationStatus = CLLocationManager.authorizationStatus()
+        shouldGetUserLocation = true
+        executeLocationActionsOnStatus(status: status)
     }
     
-    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-        print("The annotation was selected",view.annotation?.title)
+    func executeLocationActionsOnStatus(status: CLAuthorizationStatus) {
+        if !shouldGetUserLocation { return }
+        switch status {
+        case .notDetermined:
+            print("Ask for permissions?")
+            locationManager.requestAlwaysAuthorization()
+        case .authorizedAlways, .authorizedWhenInUse:
+            print("Permissions granted. Get location")
+            locationManager.startUpdatingLocation()
+        case .denied:
+            let alert = UIAlertController(title: "Location Services Disabled", message: "Turn on location services to see your current location", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+            present(alert, animated: true)
+        default:
+            print("Case not contemplated: \(status.rawValue)")
+        }
     }
 }
-*/
+
+extension MapViewController: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        executeLocationActionsOnStatus(status: status)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        getMapMarkerAndDetailsByLocation(locations.first!)
+        // Avoid updating the location continuously
+        locationManager.stopUpdatingLocation()
+    }
+}
