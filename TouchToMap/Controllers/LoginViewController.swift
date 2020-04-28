@@ -32,22 +32,31 @@ class LoginViewController: UIViewController {
             return
         }
         let title = authContext.biometryType == LABiometryType.faceID ? "Login with Face ID" : "Login with Touch ID"
-        let icon = authContext.biometryType == LABiometryType.faceID ? "faceid" : "hand.thumbsup"
-        self.viewObj.setLoginActionContent(buttonTitle: title, imageName: icon)
-        /*
+        let icon = authContext.biometryType == LABiometryType.faceID
+            ? UIImage(systemName: "faceid")
+            : UIImage(imageLiteralResourceName: "fingerprint")
+        self.viewObj.setLoginActionContent(buttonTitle: title, image: icon!, action: authenticateWithBiometrics)
+    }
+    
+    func authenticateWithBiometrics() {
         let reason = "Identify"
         authContext.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { [weak self] (success, error) in
             DispatchQueue.main.async {
                 if success {
-                    
+                    self?.navigateToMapView()
                     return
                 }
                 switch error {
                 case LAError.authenticationFailed?:
                   print("There was a problem verifying your identity.")
+                    let alert = UIAlertController(title: "Authentication Failed", message: "You have failed many times to identify yourself", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+                    self?.present(alert, animated: true)
                 case LAError.userCancel?:
                   print("You pressed cancel.")
-                  self?.viewObj.setLoginText(title: "Try again", description: "Biometrics are required to continue\nClose the app and try again")
+                  let alert = UIAlertController(title: "Authentication Failed", message: "Biometric authentication failed. Try again", preferredStyle: .alert)
+                  alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+                  self?.present(alert, animated: true)
                 case LAError.userFallback?:
                   print("You pressed password.")
                 case LAError.biometryNotAvailable?:
@@ -61,7 +70,11 @@ class LoginViewController: UIViewController {
                 }
             }
         }
-         */
+    }
+    
+    func navigateToMapView() {
+        let controller = MapViewController()
+        navigationController?.pushViewController(controller, animated: true)
     }
 
 }
