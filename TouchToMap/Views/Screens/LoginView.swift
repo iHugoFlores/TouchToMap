@@ -10,6 +10,8 @@ import UIKit
 
 class LoginView: UIView {
     
+    private var loginAction: (() -> Void)?
+    
     private let logoImage: UIImageView = {
         let image = UIImageView(image: #imageLiteral(resourceName: "logo"))
         image.translatesAutoresizingMaskIntoConstraints = false
@@ -27,7 +29,7 @@ class LoginView: UIView {
     private let autenticationMethodImage: UIImageView = {
         let image = UIImageView(image: UIImage(systemName: "questionmark"))
         image.translatesAutoresizingMaskIntoConstraints = false
-        image.contentMode = .scaleAspectFill
+        image.contentMode = .scaleAspectFit
         return image
     }()
     
@@ -35,10 +37,22 @@ class LoginView: UIView {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Login", for: .normal)
+        button.addTarget(self, action: #selector(onLoginPressed(sender:)), for: .touchUpInside)
+        button.contentHorizontalAlignment = .fill
+        button.contentMode = .center
+        button.imageView?.contentMode = .scaleAspectFit
         return button
     }()
     
-    private let bottomContainerView = UIView()
+    private let bottomContainerView: UIStackView = {
+        let view = UIStackView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.distribution = .fillEqually
+        view.axis = .horizontal
+        view.spacing = 16
+        return view
+    }()
+
     private let bottomView = UIView()
     
     override init(frame: CGRect) {
@@ -87,7 +101,6 @@ class LoginView: UIView {
         welcomeLabel.topAnchor.constraint(equalTo: centerYAnchor).isActive = true
         welcomeLabel.leadingAnchor.constraint(equalTo: margins.leadingAnchor, constant: 32).isActive = true
         welcomeLabel.trailingAnchor.constraint(equalTo: margins.trailingAnchor, constant: -32).isActive = true
-        //welcomeLabel.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
     }
     
     func setLoginActionArea() {
@@ -97,12 +110,12 @@ class LoginView: UIView {
         //bottomView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         addSubview(bottomView)
 
-        bottomContainerView.translatesAutoresizingMaskIntoConstraints = false
-
         bottomView.addSubview(bottomContainerView)
-
-        bottomContainerView.centerXAnchor.constraint(equalTo: bottomView.centerXAnchor).isActive = true
-        bottomContainerView.centerYAnchor.constraint(equalTo: bottomView.centerYAnchor).isActive = true
+        
+        let margins = bottomView.layoutMarginsGuide
+        bottomContainerView.leadingAnchor.constraint(equalTo: margins.leadingAnchor, constant: 16).isActive = true
+        bottomContainerView.trailingAnchor.constraint(equalTo: margins.trailingAnchor).isActive = true
+        bottomContainerView.topAnchor.constraint(equalTo: margins.topAnchor).isActive = true
 
         bottomView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         bottomView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
@@ -110,20 +123,13 @@ class LoginView: UIView {
         bottomView.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor, constant: 16).isActive = true
     }
     
-    func setLoginActionContent(buttonTitle: String, imageName: String) {
+    func setLoginActionContent(buttonTitle: String, image: UIImage, action: (() -> Void)?) {
+        loginAction = action
         loginButton.setTitle(buttonTitle, for: .normal)
-        autenticationMethodImage.image = UIImage(systemName: imageName)
-        bottomContainerView.addSubview(autenticationMethodImage)
-        bottomContainerView.addSubview(loginButton)
-        
-        loginButton.leadingAnchor.constraint(equalTo: bottomContainerView.leadingAnchor).isActive = true
-        loginButton.topAnchor.constraint(equalTo: bottomContainerView.topAnchor).isActive = true
-        loginButton.bottomAnchor.constraint(equalTo: bottomContainerView.bottomAnchor).isActive = true
-        autenticationMethodImage.leadingAnchor.constraint(equalTo: loginButton.trailingAnchor, constant: 72).isActive = true
-        autenticationMethodImage.topAnchor.constraint(equalTo: bottomContainerView.topAnchor).isActive = true
-        autenticationMethodImage.bottomAnchor.constraint(equalTo: bottomContainerView.bottomAnchor).isActive = true
-        autenticationMethodImage.heightAnchor.constraint(equalTo: bottomView.heightAnchor, multiplier: 0.3).isActive = true
-        autenticationMethodImage.trailingAnchor.constraint(equalTo: bottomContainerView.trailingAnchor).isActive = true
+        autenticationMethodImage.image = image
+        bottomContainerView.addArrangedSubview(loginButton)
+        bottomContainerView.addArrangedSubview(autenticationMethodImage)
+        autenticationMethodImage.heightAnchor.constraint(equalTo: bottomView.heightAnchor, multiplier: 0.4).isActive = true
     }
     
     func setLoginText(title: String, description: String) {
@@ -144,11 +150,12 @@ class LoginView: UIView {
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         label.attributedText = content
-        bottomContainerView.addSubview(label)
-        label.leadingAnchor.constraint(equalTo: bottomContainerView.leadingAnchor).isActive = true
-        label.trailingAnchor.constraint(equalTo: bottomContainerView.trailingAnchor).isActive = true
-        label.topAnchor.constraint(equalTo: bottomContainerView.topAnchor).isActive = true
-        label.bottomAnchor.constraint(equalTo: bottomContainerView.bottomAnchor).isActive = true
+        bottomContainerView.addArrangedSubview(label)
+    }
+    
+    @objc
+    func onLoginPressed(sender: UIButton) {
+        if let action = loginAction { action() }
     }
 
 }
