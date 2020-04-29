@@ -35,6 +35,7 @@ class MapViewController: UIViewController {
     func setUpView() {
         //viewObj.setMapDelegate(to: self)
         viewObj.setLocationButtonAction(action: checkLocationPermissions)
+        view.isAccessibilityElement = false
         view.addSubview(viewObj)
         viewObj.setMapPressListener(target: self, action: #selector(onMapTapped(gestureReconizer:)))
         viewObj.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
