@@ -14,6 +14,7 @@ class DraggableView: UIViewController {
     }
     
     private var viewHeight: CGFloat = 0
+    private var heightRatio: CGFloat = 0
     private let handleAreaHeight: CGFloat = 30
     private var visualEffect: UIVisualEffectView?
     private var viewVisible = false
@@ -47,6 +48,14 @@ class DraggableView: UIViewController {
         return view
     }()
     
+    let blurEffectView: UIVisualEffectView = {
+        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+        blurView.translatesAutoresizingMaskIntoConstraints = false
+        blurView.layer.cornerRadius = 16
+        blurView.clipsToBounds = true
+        return blurView
+    }()
+    
     init(mainView: UIView, heightRatio: CGFloat) {
         super.init(nibName: nil, bundle: nil)
         contentView = mainView
@@ -55,22 +64,27 @@ class DraggableView: UIViewController {
         let safeFrame = window.safeAreaLayoutGuide.layoutFrame
         topSafeAreaHeight = safeFrame.minY
         bottomSafeAreaHeight = window.frame.maxY - safeFrame.maxY
-        viewHeight = (safeFrame.height * heightRatio) - handleAreaHeight
+        self.heightRatio = heightRatio
+        calculateViewHeightFrom(size: safeFrame.size)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        calculateViewHeightFrom(size: size)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .clear
-        let blurEffect = UIBlurEffect(style: .regular)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.frame = view.frame
-        blurEffectView.layer.cornerRadius = 16
-        blurEffectView.clipsToBounds = true
-        view.insertSubview(blurEffectView, at: 0)
+        
+        view.addSubview(blurEffectView)
+        blurEffectView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        blurEffectView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        blurEffectView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        blurEffectView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        
         setUpAnimatableViews()
         setUpMain()
         setUpAnimationActions()
@@ -81,6 +95,10 @@ class DraggableView: UIViewController {
         visualEffect?.isUserInteractionEnabled = false
         visualEffect?.frame = view.frame
         view.addSubview(visualEffect!)
+    }
+    
+    func calculateViewHeightFrom(size: CGSize) {
+        viewHeight = (size.height * heightRatio) - handleAreaHeight
     }
     
     func setViewCompressedPosition() {
