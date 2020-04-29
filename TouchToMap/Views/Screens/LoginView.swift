@@ -15,6 +15,9 @@ class LoginView: UIView {
     private let logoImage: UIImageView = {
         let image = UIImageView(image: #imageLiteral(resourceName: "logo"))
         image.translatesAutoresizingMaskIntoConstraints = false
+        image.isAccessibilityElement = true
+        image.accessibilityHint = "App Logo"
+        image.accessibilityTraits = .image
         return image
     }()
     
@@ -23,6 +26,7 @@ class LoginView: UIView {
         text.translatesAutoresizingMaskIntoConstraints = false
         text.numberOfLines = 2
         text.textAlignment = .center
+        text.isAccessibilityElement = true
         return text
     }()
     
@@ -41,6 +45,7 @@ class LoginView: UIView {
         button.contentHorizontalAlignment = .fill
         button.contentMode = .center
         button.imageView?.contentMode = .scaleAspectFit
+        button.isAccessibilityElement = true
         return button
     }()
     
@@ -96,6 +101,7 @@ class LoginView: UIView {
         )
         
         welcomeLabel.attributedText = welcomeContent
+        welcomeLabel.accessibilityHint = "Welcome to touch to map"
         addSubview(welcomeLabel)
         let margins = layoutMarginsGuide
         welcomeLabel.topAnchor.constraint(equalTo: centerYAnchor).isActive = true
@@ -126,6 +132,7 @@ class LoginView: UIView {
     func setLoginActionContent(buttonTitle: String, image: UIImage, action: (() -> Void)?) {
         loginAction = action
         loginButton.setTitle(buttonTitle, for: .normal)
+        loginButton.accessibilityHint = buttonTitle
         autenticationMethodImage.image = image
         bottomContainerView.addArrangedSubview(loginButton)
         bottomContainerView.addArrangedSubview(autenticationMethodImage)

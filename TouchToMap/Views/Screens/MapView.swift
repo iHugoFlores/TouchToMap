@@ -14,12 +14,26 @@ class MapView: UIView {
     private let mapView: MKMapView = {
         let map = MKMapView()
         map.translatesAutoresizingMaskIntoConstraints = false
-        //map.insetsLayoutMarginsFromSafeArea = false
+        map.isAccessibilityElement = true
+        map.accessibilityHint = "Map"
         return map
     }()
     
-    private let titleCard = TextCard()
-    private let userLocationButton = IconButtonCard()
+    private let titleCard: TextCard = {
+        let card = TextCard()
+        card.setTitle("Touch anywhere in the map to get information about the place")
+        card.isAccessibilityElement = true
+        card.accessibilityHint = "Touch anywhere in the map to get information about the place"
+        return card
+    }()
+
+    private let userLocationButton: IconButtonCard = {
+        let button = IconButtonCard()
+        button.isAccessibilityElement = true
+        button.accessibilityHint = "Get your location"
+        return button
+    }()
+
     private var locationButtonAction: (() -> Void)?
     
     override init(frame: CGRect) {
@@ -47,7 +61,6 @@ class MapView: UIView {
     }
     
     func setUpMapContents() {
-        titleCard.setTitle("Touch anywhere in the map to get information about the place")
         mapView.addSubview(titleCard)
         userLocationButton.setUpButton(iconName: "location", action: getUserLocation)
         mapView.addSubview(userLocationButton)
